@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
@@ -9,6 +9,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Заполните все поля' }, { status: 400 });
     }
 
+    const sql = neon(process.env.POSTGRES_URL);
     const cleanSlug = subdomain.toLowerCase().trim().replace(/[^a-z0-9_-]/g, '');
 
     await sql`
@@ -27,7 +28,8 @@ export async function POST(request) {
 
 export async function GET() {
   try {
-    const { rows } = await sql`SELECT subdomain, url FROM sub_links ORDER BY id DESC LIMIT 50`;
+    const sql = neon(process.env.POSTGRES_URL);
+    const rows = await sql`SELECT subdomain, url FROM sub_links ORDER BY id DESC LIMIT 50`;
     return NextResponse.json({ links: rows });
   } catch (error) {
     return NextResponse.json({ links: [] });
