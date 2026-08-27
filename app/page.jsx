@@ -53,8 +53,7 @@ export default function Home() {
   };
 
   const handleCopy = (slug, index) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://links-bhgj.vercel.app';
-    const fullUrl = `${origin}/${slug}`;
+    const fullUrl = `https://${slug}.votesaafrt.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -165,8 +164,7 @@ export default function Home() {
             <p style={{ color: '#64748b', fontSize: '14px' }}>Пока нет созданных ссылок</p>
           ) : (
             links.map((item, idx) => {
-              const origin = typeof window !== 'undefined' ? window.location.origin : 'https://links-bhgj.vercel.app';
-              const fullLink = `${origin}/${item.subdomain}`;
+              const fullLink = `https://${item.subdomain}.votesaafrt.sbs`;
 
               return (
                 <div key={idx} style={{
