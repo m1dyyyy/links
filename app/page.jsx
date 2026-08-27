@@ -2,220 +2,229 @@
 
 import { useState, useEffect } from 'react';
 
-export default function SydarLinks() {
-  const [targetUrl, setTargetUrl] = useState('');
+export default function Home() {
+  const [url, setUrl] = useState('');
   const [subdomain, setSubdomain] = useState('');
   const [links, setLinks] = useState([]);
-  const [toast, setToast] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
-  const loadLinks = async () => {
+  const fetchLinks = async () => {
     try {
       const res = await fetch('/api/save');
       const data = await res.json();
       if (data.links) setLinks(data.links);
-    } catch (e) {}
+    } catch (err) {
+      console.error('Ошибка при загрузке ссылок:', err);
+    }
   };
 
   useEffect(() => {
-    loadLinks();
+    fetchLinks();
   }, []);
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(''), 2000);
-  };
-
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!targetUrl.trim() || !subdomain.trim()) return;
+    setLoading(true);
+    setError('');
 
     try {
       const res = await fetch('/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subdomain: subdomain.trim(), url: targetUrl.trim() }),
+        body: JSON.stringify({ subdomain, url }),
       });
 
-      if (res.ok) {
-        setTargetUrl('');
-        setSubdomain('');
-        showToast('Ссылка создана!');
-        loadLinks();
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка при создании ссылки');
       }
+
+      setUrl('');
+      setSubdomain('');
+      fetchLinks();
     } catch (err) {
-      showToast('Ошибка создания');
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const copyLink = (slug) => {
-    const fullUrl = `${window.location.origin}/${slug}`;
+  const handleCopy = (slug, index) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://links-bhgj.vercel.app';
+    const fullUrl = `${origin}/${slug}`;
     navigator.clipboard.writeText(fullUrl);
-    showToast('Ссылка скопирована!');
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
   };
 
   return (
-    <div style={{
+    <main style={{
       minHeight: '100vh',
       backgroundColor: '#080c14',
-      color: '#f1f5f9',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      color: '#ffffff',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      padding: '48px 16px'
+      paddingTop: '60px',
+      paddingBottom: '40px',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
-      {toast && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          backgroundColor: '#2563eb',
-          color: '#fff',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          zIndex: 100
-        }}>
-          {toast}
-        </div>
-      )}
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 8px 0' }}>SYDAR Links</h1>
+        <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
+          Генератор ссылок (рекламные редиректы)
+        </p>
+      </div>
 
-      <div style={{ width: '100%', maxWidth: '560px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#ffffff', margin: '0 0 8px 0' }}>
-            SYDAR Links
-          </h1>
-          <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>
-            Генератор ссылок: (тут название ссылок ну поддоменов)
-          </p>
-        </div>
-
-        <div style={{
-          backgroundColor: '#0f172a',
-          border: '1px solid #1e293b',
-          borderRadius: '16px',
-          padding: '28px',
-          marginBottom: '32px'
-        }}>
-          <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '14px', color: '#cbd5e1', marginBottom: '8px' }}>
-                Целевая ссылка
-              </label>
-              <input
-                type="url"
-                required
-                value={targetUrl}
-                onChange={(e) => setTargetUrl(e.target.value)}
-                placeholder="https://example.com"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  backgroundColor: '#1e293b',
-                  border: '1px solid #334155',
-                  color: '#fff',
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '14px', color: '#cbd5e1', marginBottom: '8px' }}>
-                Поддомен
-              </label>
-              <input
-                type="text"
-                required
-                value={subdomain}
-                onChange={(e) => setSubdomain(e.target.value)}
-                placeholder="missleto"
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  backgroundColor: '#1e293b',
-                  border: '1px solid #334155',
-                  color: '#fff',
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-
-            <button
-              type="submit"
+      <div style={{
+        backgroundColor: '#0f172a',
+        padding: '24px',
+        borderRadius: '12px',
+        width: '100%',
+        maxWidth: '440px',
+        border: '1px solid #1e293b',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+        boxSizing: 'border-box'
+      }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
+              Целевая ссылка
+            </label>
+            <input
+              type="text"
+              placeholder="https://example.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
               style={{
                 width: '100%',
-                padding: '14px',
-                backgroundColor: '#ffffff',
-                color: '#0f172a',
-                fontWeight: '700',
-                borderRadius: '12px',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '14px',
-                marginTop: '8px'
+                padding: '10px 14px',
+                backgroundColor: '#1e293b',
+                border: '1px solid #334155',
+                borderRadius: '6px',
+                color: '#fff',
+                outline: 'none',
+                boxSizing: 'border-box'
               }}
-            >
-              Создать ссылку
-            </button>
-          </form>
-        </div>
-
-        <div>
-          <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '16px' }}>
-            Активные ссылки
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {links.map((item) => (
-              <div
-                key={item.subdomain}
-                style={{
-                  backgroundColor: '#0f172a',
-                  border: '1px solid #1e293b',
-                  borderRadius: '12px',
-                  padding: '16px 20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '16px'
-                }}
-              >
-                <div style={{ overflow: 'hidden' }}>
-                  <div style={{ color: '#3b82f6', fontWeight: '600', fontSize: '15px' }}>
-                    {item.subdomain}/vercell.app
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                    → {item.url}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => copyLink(item.subdomain)}
-                  style={{
-                    backgroundColor: '#1e293b',
-                    color: '#fff',
-                    border: '1px solid #334155',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  Копировать
-                </button>
-              </div>
-            ))}
+            />
           </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
+              Поддомен / Слаг
+            </label>
+            <input
+              type="text"
+              placeholder="missleto"
+              value={subdomain}
+              onChange={(e) => setSubdomain(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                backgroundColor: '#1e293b',
+                border: '1px solid #334155',
+                borderRadius: '6px',
+                color: '#fff',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+
+          {error && <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#ffffff',
+              color: '#0f172a',
+              fontWeight: 'bold',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              marginTop: '8px'
+            }}
+          >
+            {loading ? 'Создание...' : 'Создать ссылку'}
+          </button>
+        </form>
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '440px', marginTop: '32px', padding: '0 16px', boxSizing: 'border-box' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>Активные ссылки</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {links.length === 0 ? (
+            <p style={{ color: '#64748b', fontSize: '14px' }}>Пока нет созданных ссылок</p>
+          ) : (
+            links.map((item, idx) => {
+              const origin = typeof window !== 'undefined' ? window.location.origin : 'https://links-bhgj.vercel.app';
+              const fullLink = `${origin}/${item.subdomain}`;
+
+              return (
+                <div key={idx} style={{
+                  backgroundColor: '#0f172a',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  border: '1px solid #1e293b',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div style={{ overflow: 'hidden', paddingRight: '12px' }}>
+                    <a
+                      href={fullLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: '#3b82f6',
+                        fontWeight: 'bold',
+                        textDecoration: 'none',
+                        display: 'block',
+                        wordBreak: 'break-all'
+                      }}
+                    >
+                      {fullLink}
+                    </a>
+                    <div style={{
+                      color: '#64748b',
+                      fontSize: '13px',
+                      marginTop: '4px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      → {item.url}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleCopy(item.subdomain, idx)}
+                    style={{
+                      backgroundColor: '#1e293b',
+                      color: '#fff',
+                      border: '1px solid #334155',
+                      padding: '8px 14px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {copiedIndex === idx ? 'Скопировано!' : 'Копировать'}
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }
