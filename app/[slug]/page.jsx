@@ -1,22 +1,30 @@
 import { neon } from '@neondatabase/serverless';
 import { redirect } from 'next/navigation';
 
+// Принудительно включаем динамический режим для редиректов
+export const dynamic = 'force-dynamic';
+
 export default async function RedirectPage({ params }) {
-  const { slug } = await params;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
 
   if (!slug || slug === 'favicon.ico' || slug === 'api') return null;
 
   let targetUrl = null;
 
   try {
-    const sql = neon(process.env.POSTGRES_URL);
-    const cleanSlug = slug.toLowerCase().trim();
+    const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+    if (!dbUrl) return null;
+
+    const sql = neon(dbUrl);
+    const cleanSlug = String(slug).toLowerCase().trim();
+    
     const rows = await sql`
       SELECT url FROM sub_links 
       WHERE LOWER(TRIM(subdomain)) = ${cleanSlug}
     `;
 
-    if (rows.length > 0 && rows[0].url) {
+    if (rows && rows.length > 0 && rows[0].url) {
       targetUrl = rows[0].url;
     }
   } catch (error) {
@@ -36,7 +44,6 @@ export default async function RedirectPage({ params }) {
       backgroundColor: '#080c14',
       color: '#fff',
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       fontFamily: 'system-ui, sans-serif'
