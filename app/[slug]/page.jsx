@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { neon } from '@neondatabase/serverless';
 import { redirect } from 'next/navigation';
 
 export default async function RedirectPage({ params }) {
@@ -9,8 +9,9 @@ export default async function RedirectPage({ params }) {
   let targetUrl = null;
 
   try {
+    const sql = neon(process.env.POSTGRES_URL);
     const cleanSlug = slug.toLowerCase().trim();
-    const { rows } = await sql`
+    const rows = await sql`
       SELECT url FROM sub_links 
       WHERE LOWER(TRIM(subdomain)) = ${cleanSlug}
     `;
