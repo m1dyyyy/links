@@ -1,7 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { redirect } from 'next/navigation';
 
-// Принудительно включаем динамический режим для редиректов
 export const dynamic = 'force-dynamic';
 
 export default async function RedirectPage({ params }) {
@@ -18,7 +17,7 @@ export default async function RedirectPage({ params }) {
 
     const sql = neon(dbUrl);
     const cleanSlug = String(slug).toLowerCase().trim();
-    
+
     const rows = await sql`
       SELECT url FROM sub_links 
       WHERE LOWER(TRIM(subdomain)) = ${cleanSlug}
