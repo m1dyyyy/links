@@ -22,6 +22,9 @@ export default function Home() {
 
   useEffect(() => {
     fetchLinks();
+    // Автообновление кликов (глазик) каждые 5 секунд
+    const interval = setInterval(fetchLinks, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -62,36 +65,53 @@ export default function Home() {
   return (
     <main style={{
       minHeight: '100vh',
-      backgroundColor: '#080c14',
-      color: '#ffffff',
+      backgroundColor: '#07090e',
+      color: '#f8fafc',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      paddingTop: '60px',
-      paddingBottom: '40px',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
+      padding: '40px 16px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 'bold', margin: '0 0 8px 0' }}>SYDAR Links</h1>
-        <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
-          Генератор ссылок (рекламные редиректы)
+      {/* Шапка */}
+      <div style={{ textAlign: 'center', marginBottom: '36px', maxWidth: '480px' }}>
+        <div style={{
+          display: 'inline-block',
+          padding: '4px 12px',
+          borderRadius: '20px',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          color: '#3b82f6',
+          fontSize: '12px',
+          fontWeight: '600',
+          marginBottom: '12px',
+          letterSpacing: '0.5px'
+        }}>
+          SECURE TDS SYSTEM
+        </div>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 6px 0', letterSpacing: '-0.5px' }}>
+          SYDAR Links
+        </h1>
+        <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>
+          Современная панель управления потоками и редиректами
         </p>
       </div>
 
+      {/* Карточка создания */}
       <div style={{
-        backgroundColor: '#0f172a',
+        backgroundColor: '#0b1120',
         padding: '24px',
-        borderRadius: '12px',
+        borderRadius: '16px',
         width: '100%',
-        maxWidth: '440px',
+        maxWidth: '460px',
         border: '1px solid #1e293b',
-        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
-        boxSizing: 'border-box'
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4)',
+        boxSizing: 'border-box',
+        marginBottom: '32px'
       }}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
-              Целевая ссылка
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#94a3b8', marginBottom: '6px' }}>
+              ЦЕЛЕВАЯ ССЫЛКА (ОФФЕР)
             </label>
             <input
               type="text"
@@ -101,20 +121,24 @@ export default function Home() {
               required
               style={{
                 width: '100%',
-                padding: '10px 14px',
-                backgroundColor: '#1e293b',
+                padding: '11px 14px',
+                backgroundColor: '#0f172a',
                 border: '1px solid #334155',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 color: '#fff',
+                fontSize: '14px',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
+              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+              onBlur={(e) => e.target.style.borderColor = '#334155'}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
-              Поддомен / Слаг
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', color: '#94a3b8', marginBottom: '6px' }}>
+              ПОДДОМЕН / СЛАГ
             </label>
             <input
               type="text"
@@ -124,18 +148,26 @@ export default function Home() {
               required
               style={{
                 width: '100%',
-                padding: '10px 14px',
-                backgroundColor: '#1e293b',
+                padding: '11px 14px',
+                backgroundColor: '#0f172a',
                 border: '1px solid #334155',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 color: '#fff',
+                fontSize: '14px',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
+              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+              onBlur={(e) => e.target.style.borderColor = '#334155'}
             />
           </div>
 
-          {error && <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>}
+          {error && (
+            <div style={{ padding: '10px', borderRadius: '6px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontSize: '13px' }}>
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
@@ -143,79 +175,110 @@ export default function Home() {
             style={{
               width: '100%',
               padding: '12px',
-              backgroundColor: '#ffffff',
-              color: '#0f172a',
-              fontWeight: 'bold',
+              backgroundColor: '#3b82f6',
+              color: '#ffffff',
+              fontWeight: '600',
+              fontSize: '14px',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '8px',
               cursor: 'pointer',
-              marginTop: '8px'
+              transition: 'background-color 0.2s',
+              marginTop: '4px',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
             }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
           >
-            {loading ? 'Создание...' : 'Создать ссылку'}
+            {loading ? 'Создание...' : 'Создать поток'}
           </button>
         </form>
       </div>
 
-      <div style={{ width: '100%', maxWidth: '440px', marginTop: '32px', padding: '0 16px', boxSizing: 'border-box' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>Активные ссылки</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Список активных ссылок */}
+      <div style={{ width: '100%', maxWidth: '460px', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#94a3b8', margin: 0, letterSpacing: '0.5px' }}>
+            АКТИВНЫЕ ПОТОКИ
+          </h3>
+          <span style={{ fontSize: '12px', color: '#475569', backgroundColor: '#0b1120', padding: '2px 8px', borderRadius: '10px', border: '1px solid #1e293b' }}>
+            {links.length} шт.
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {links.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: '14px' }}>Пока нет созданных ссылок</p>
+            <div style={{ textAlign: 'center', padding: '30px', color: '#475569', fontSize: '13px', backgroundColor: '#0b1120', borderRadius: '12px', border: '1px solid #1e293b' }}>
+              Пока нет созданных потоков
+            </div>
           ) : (
             links.map((item, idx) => {
               const fullLink = `https://${item.subdomain}.votesaafrt.sbs`;
+              const clicksCount = item.clicks || 0; // Ссылка на будущий счетчик в базе
 
               return (
                 <div key={idx} style={{
-                  backgroundColor: '#0f172a',
-                  padding: '16px',
-                  borderRadius: '8px',
+                  backgroundColor: '#0b1120',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
                   border: '1px solid #1e293b',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  transition: 'border-color 0.2s'
                 }}>
-                  <div style={{ overflow: 'hidden', paddingRight: '12px' }}>
+                  <div style={{ overflow: 'hidden', paddingRight: '12px', flex: 1 }}>
                     <a
                       href={fullLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
-                        color: '#3b82f6',
-                        fontWeight: 'bold',
+                        color: '#60a5fa',
+                        fontWeight: '600',
+                        fontSize: '13px',
                         textDecoration: 'none',
                         display: 'block',
-                        wordBreak: 'break-all'
+                        wordBreak: 'break-all',
+                        marginBottom: '4px'
                       }}
                     >
                       {fullLink}
                     </a>
                     <div style={{
                       color: '#64748b',
-                      fontSize: '13px',
-                      marginTop: '4px',
+                      fontSize: '12px',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      marginBottom: '6px'
                     }}>
                       → {item.url}
                     </div>
+                    {/* Плашка с глазиком и живыми кликами */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '11px' }}>
+                      <span>👁</span>
+                      <span style={{ fontWeight: '600', color: '#cbd5e1' }}>{clicksCount}</span>
+                      <span style={{ color: '#475569' }}>переходов</span>
+                    </div>
                   </div>
+
                   <button
                     onClick={() => handleCopy(item.subdomain, idx)}
                     style={{
                       backgroundColor: '#1e293b',
-                      color: '#fff',
+                      color: '#f8fafc',
                       border: '1px solid #334155',
-                      padding: '8px 14px',
+                      padding: '8px 12px',
                       borderRadius: '6px',
                       cursor: 'pointer',
-                      fontSize: '13px',
-                      whiteSpace: 'nowrap'
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      transition: 'background-color 0.2s'
                     }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#334155'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#1e293b'}
                   >
-                    {copiedIndex === idx ? 'Скопировано!' : 'Копировать'}
+                    {copiedIndex === idx ? 'Готово!' : 'Копировать'}
                   </button>
                 </div>
               );
