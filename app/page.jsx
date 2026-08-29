@@ -22,7 +22,6 @@ export default function Home() {
 
   useEffect(() => {
     fetchLinks();
-    // Автообновление кликов (глазик) каждые 5 секунд
     const interval = setInterval(fetchLinks, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -55,8 +54,8 @@ export default function Home() {
     }
   };
 
-  const handleCopy = (slug, index) => {
-    const fullUrl = `https://${item.subdomain}.artsvote.sbs`;
+  const handleCopy = (subdomain, index) => {
+    const fullUrl = `https://${subdomain}.artsvote.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -212,8 +211,8 @@ export default function Home() {
             </div>
           ) : (
             links.map((item, idx) => {
-              const fullUrl = `https://${item.subdomain}.artsvote.sbs`;
-              const clicksCount = item.clicks || 0; // Ссылка на будущий счетчик в базе
+              const fullLink = `https://${item.subdomain}.artsvote.sbs`;
+              const clicksCount = item.clicks || 0;
 
               return (
                 <div key={idx} style={{
@@ -253,7 +252,6 @@ export default function Home() {
                     }}>
                       → {item.url}
                     </div>
-                    {/* Плашка с глазиком и живыми кликами */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#94a3b8', fontSize: '11px' }}>
                       <span>👁</span>
                       <span style={{ fontWeight: '600', color: '#cbd5e1' }}>{clicksCount}</span>
