@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   const handleCopy = (slug, index) => {
-    const fullUrl = `https://${slug}.votesaafrt.sbs`;
+    const fullUrl = `https://${item.subdomain}.artsvote.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
