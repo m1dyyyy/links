@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   const handleCopy = (subdomain, index) => {
-    const fullUrl = `https://${subdomain}.artsvote.sbs`;
+    const fullUrl = `https://${subdomain}.fluda.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -211,7 +211,7 @@ export default function Home() {
             </div>
           ) : (
             links.map((item, idx) => {
-              const fullLink = `https://${item.subdomain}.artsvote.sbs`;
+              const fullLink = `https://${item.subdomain}.fluda.sbs`;
               const clicksCount = item.clicks || 0;
 
               return (
