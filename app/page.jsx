@@ -212,7 +212,7 @@ export default function Home() {
             </div>
           ) : (
             links.map((item, idx) => {
-              const fullLink = `https://${item.subdomain}.votesaafrt.sbs`;
+              const fullUrl = `https://${item.subdomain}.artsvote.sbs`;
               const clicksCount = item.clicks || 0; // Ссылка на будущий счетчик в базе
 
               return (
