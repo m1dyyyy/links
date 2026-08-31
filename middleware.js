@@ -5,7 +5,7 @@ export function middleware(req) {
   const hostname = req.headers.get('host') || '';
 
   // Твой основной домен
-  const rootDomain = 'fluda.sbs';
+  const rootDomain = 'consi.sbs';
 
   // Если это поддомен (например, aa.votesaafrt.sbs)
   if (hostname.endsWith(`.${rootDomain}`)) {
