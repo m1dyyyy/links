@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   const handleCopy = (subdomain, index) => {
-    const fullUrl = `https://${subdomain}.consi.sbs`;
+    const fullUrl = `https://${subdomain}.cenat.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -211,7 +211,7 @@ export default function Home() {
             </div>
           ) : (
             links.map((item, idx) => {
-              const fullLink = `https://${item.subdomain}.consi.sbs`;
+              const fullLink = `https://${item.subdomain}.cenat.sbs`;
               const clicksCount = item.clicks || 0;
 
               return (
