@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'SYDAR Links',
-  description: 'Link Shortener',
+  title: 'VoteArt',
+  description: 'VoteArt Link Protection System',
 };
 
 export default function RootLayout({ children }) {
