@@ -1,5 +1,4 @@
 import { neon } from '@neondatabase/serverless';
-import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +34,7 @@ export default async function RedirectPage({ params }) {
       targetUrl = `https://${targetUrl}`;
     }
 
-    // Инкремент кликов в базе перед мгновенным редиректом
+    // Инкремент кликов в базе
     try {
       const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
       const sql = neon(dbUrl);
@@ -49,21 +48,38 @@ export default async function RedirectPage({ params }) {
       console.error('Ошибка инкремента клика:', err);
     }
 
-    // Мгновенный HTTP-редирект без отображения интерфейса
-    redirect(targetUrl);
+    // Возвращаем HTML со статусом 200 OK + бессекундный JS-редирект
+    return (
+      <html lang="ru">
+        <head>
+          <meta charSet="utf-8" />
+          <title>Загрузка...</title>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.location.replace(${JSON.stringify(targetUrl)});`,
+            }}
+          />
+        </head>
+        <body style={{ backgroundColor: '#080c14', margin: 0 }} />
+      </html>
+    );
   }
 
   return (
-    <main style={{
-      minHeight: '100vh',
-      backgroundColor: '#080c14',
-      color: '#fff',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'system-ui, sans-serif'
-    }}>
-      <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>Ссылка не найдена или устарела</h2>
+    <main
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#080c14',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'system-ui, sans-serif',
+      }}
+    >
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>
+        Ссылка не найдена или устарела
+      </h2>
     </main>
   );
 }
