@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   const handleCopy = (subdomain, index) => {
-    const fullUrl = `https://${subdomain}.mirbe.sbs`;
+    const fullUrl = `https://${subdomain}.quartiza.sbs`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -211,7 +211,7 @@ export default function Home() {
             </div>
           ) : (
             links.map((item, idx) => {
-              const fullLink = `https://${item.subdomain}.mirbe.sbs`;
+              const fullLink = `https://${item.subdomain}.quartiza.sbs`;
               const clicksCount = item.clicks || 0;
 
               return (
